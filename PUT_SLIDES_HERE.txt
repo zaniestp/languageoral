@@ -1,0 +1,15 @@
+PLACE YOUR SLIDE FILES IN THIS FOLDER
+=======================================
+
+  Slide1.png         <- Introduction screen  (MUST be PNG)
+  Slide2.png/.m4v    <- Reading page 1       (PNG or video)
+  Slide3.png/.m4v    <- Reading page 2       (PNG or video)
+  ...
+  SlideN.png         <- Ending screen        (MUST be PNG)
+
+Rules:
+  - Slide1 and SlideN must be .png
+  - All slides in between can be .png or .m4v (mix freely)
+  - Files must be consecutively numbered — no gaps
+
+See resources.txt in the parent folder for full instructions.
