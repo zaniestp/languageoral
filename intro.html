@@ -108,12 +108,9 @@ body.out { animation: fadeOut 0.35s ease forwards; }
 (function () {
   if (!sessionStorage.getItem('ra_name') || !sessionStorage.getItem('ra_total')) {
     document.getElementById('guard').classList.add('show');
-    setTimeout(function () { window.location.replace('setup.html'); }, 1800);
+    setTimeout(function () { navigateReplace('setup.html'); }, 1800);
   }
 })();
-
-// ── Attempt to maintain fullscreen (may already be set from setup) ─
-try { requestFullscreen(document.documentElement); } catch (e) {}
 
 // ── Prevent back navigation ──────────────────────────────────────
 preventBackNavigation();
@@ -145,7 +142,7 @@ document.body.addEventListener('click', function (e) {
 
   // Navigate — replace() so Back cannot return here
   document.body.classList.add('out');
-  setTimeout(function () { window.location.replace('reader.html'); }, 330);
+  setTimeout(function () { navigateReplace('reader.html'); }, 330);
 });
 </script>
 </body>

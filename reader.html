@@ -97,8 +97,9 @@ body {
   min-width: 58px; text-align: right;
   transition: color 0.35s;
 }
-#timer.warn   { color: #e09a38; }
-#timer.urgent { color: #e04848; animation: blink 1s ease-in-out infinite; }
+#timer.warn     { color: #e09a38; }
+#timer.urgent   { color: #e04848; animation: blink 1s ease-in-out infinite; }
+#timer.nolimit  { color: #c4a05c; font-size: 24px; letter-spacing: 0; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.5} }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -279,6 +280,7 @@ var S = {
   pause:      20,   // seconds to wait on ending slide before reset
   cur:        2,
   ended:      false,
+  noLimit:    false,   // true when durMs === 0 (no timer)
   tickIval:   null
 };
 
@@ -292,9 +294,7 @@ var S = {
   if (!ok) {
     document.getElementById('guard').classList.add('show');
     setTimeout(function () {
-      window.location.replace(
-        sessionStorage.getItem('ra_name') ? 'intro.html' : 'setup.html'
-      );
+      navigateReplace(sessionStorage.getItem('ra_name') ? 'intro.html' : 'setup.html');
     }, 1800);
     return;
   }
@@ -308,14 +308,12 @@ function readSession() {
   S.total  = parseInt(sessionStorage.getItem('ra_total'),  10);
   S.tStart = parseInt(sessionStorage.getItem('ra_tStart'), 10);
   S.durMs  = parseInt(sessionStorage.getItem('ra_durMs'),  10);
-  S.pause  = parseInt(sessionStorage.getItem('ra_pause'),  10) || 20;
-  S.name   = sessionStorage.getItem('ra_name') || '';
+  S.pause   = parseInt(sessionStorage.getItem('ra_pause'),  10) || 20;
+  S.noLimit = (parseInt(sessionStorage.getItem('ra_mins'), 10) === 0);
+  S.name    = sessionStorage.getItem('ra_name') || '';
 
   document.getElementById('titleTxt').textContent = S.name;
   document.title = S.name + ' — Reading Activity';
-
-  // Attempt to maintain fullscreen
-  try { requestFullscreen(document.documentElement); } catch(e) {}
 
   // Prevent back navigation
   preventBackNavigation();
@@ -418,8 +416,16 @@ function showSlide(n) {
    COUNTDOWN TICK  — drift-free via Date.now()
 ───────────────────────────────────────────────────────────────── */
 function tick() {
+  var timerEl = document.getElementById('timer');
+
+  // No-limit mode — show infinity symbol, never end session
+  if (S.noLimit) {
+    timerEl.textContent = '∞';
+    timerEl.classList.remove('warn', 'urgent');
+    return;
+  }
+
   var remaining = S.durMs - (Date.now() - S.tStart);
-  var timerEl   = document.getElementById('timer');
 
   timerEl.textContent = formatTime(remaining);
   timerEl.classList.remove('warn', 'urgent');
@@ -515,7 +521,7 @@ function doReset() {
   sessionStorage.removeItem('ra_durMs');
 
   document.body.classList.add('out');
-  setTimeout(function () { window.location.replace('intro.html'); }, 330);
+  setTimeout(function () { navigateReplace('intro.html'); }, 330);
 }
 
 /* ─────────────────────────────────────────────────────────────────
